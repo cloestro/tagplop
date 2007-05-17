@@ -178,3 +178,95 @@ void on_buttonSave_clicked(GtkButton * butt)
 	printf("plop\n");
 }
 
+void guess_tags_from_filename(GtkButton *button, GladeXML *w)
+{
+	
+	gchar * filename = NULL ;
+	gchar * filename2 = NULL;
+	gchar * artist = NULL;
+	gchar * title = NULL;
+	unsigned int i = 0;
+	unsigned int j = 0;
+	unsigned int k = 0;
+	unsigned int count = 0;
+	
+	//fCh = (GtkFileChooserButton *)glade_xml_get_widget(main_window, "chooserFilename");
+	filename = gtk_file_chooser_get_filename((GtkFileChooser *)glade_xml_get_widget(w, "chooserFilename"));
+	
+	if (!filename)
+		return;
+	
+	
+	for ( i = strlen(filename) -1 ; i> 0; i--)
+	{
+		if ( filename[i] == '/' )
+			break;
+	}
+	
+	filename2 = g_malloc(strlen(filename) - i + 1);
+	for ( k = i+1; k<strlen(filename); k++)
+	{
+		filename2[count] = filename[k] ;
+		count ++ ;
+	}
+	filename2[count] = '\0' ;
+	i = 0;
+	k = 0;
+	count = 0 ;
+	
+
+	
+	g_debug("file: %s", filename2);
+	
+	for ( i=0; i < strlen(filename2); i++)
+	{
+		if ( filename2[i] == '-')
+			break;		
+	}
+	
+	for ( j=(strlen(filename2)-1); j>0; j--)
+	{
+
+		if ( filename2[j] == '.')
+			break;		
+	}
+	
+	if ( ( i == strlen(filename2 ) ) || ( j == 0 ) || (i >= j ))
+	{
+		g_warning("Unable to find tags");
+		g_free(filename);
+		g_free(filename2);
+		return ;
+	}
+	
+
+	
+	
+	g_debug("i: %d, j: %d", i,j);
+	g_debug("i: %c, j: %c", filename2[i],filename2[j]);
+	g_debug("%s", filename2);
+	
+	artist = g_strndup(filename2, i);
+	
+	title = g_malloc(j-i+1);
+	for ( k = i+1; k < j; k++)
+	{
+		title[count] = filename2[k] ;
+		count++;		
+	}
+	title[count] = '\0' ;
+	
+	g_strstrip( title );
+	g_strstrip( artist );
+	
+	g_debug("artist: %s, title: %s", artist, title);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryTitle"), title);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryArtist"), artist);
+	
+	g_free(filename2);
+	g_free(filename);
+	g_free(artist);
+	g_free(title);
+	
+	
+}

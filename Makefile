@@ -10,6 +10,8 @@ TARGET=tagplop
 OBJECTS=main.o functions.o
 
 
+all: $(TARGET)
+
 
 $(TARGET): $(OBJECTS) 
 	$(CC) -o $@ $^ $(LIBS)

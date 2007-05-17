@@ -43,6 +43,8 @@
 #define FALSE 0
 #endif
 
+#define VERSIONNUMBER "0.0.2"
+
 int main(int argc, char **argv)
 {
 
@@ -50,6 +52,9 @@ int main(int argc, char **argv)
 	GtkFileChooserButton * fCh ;
 	GtkButton *saveButton ;
 	GladeXML *main_window;
+	GtkButton *buttonTagsFromFilename ;
+	
+	gchar * appTitle = g_strdup_printf("TagPlop %s", VERSIONNUMBER);
 
 	GtkWidget *widget;
 
@@ -68,16 +73,21 @@ int main(int argc, char **argv)
 
 	widget = glade_xml_get_widget (main_window, "window1");
 
+	gtk_window_set_title((GtkWindow *) widget, appTitle);
+	
+	
 	cancelButton = glade_xml_get_widget(main_window, "buttonCancel");
 	fCh = (GtkFileChooserButton *)glade_xml_get_widget(main_window, "chooserFilename");
 	saveButton = (GtkButton *)glade_xml_get_widget(main_window, "buttonSave");
+	buttonTagsFromFilename = (GtkButton *)glade_xml_get_widget(main_window, "buttonTagsFromFilename");
 
 
 
 	g_signal_connect(G_OBJECT(widget),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect(G_OBJECT(cancelButton), "clicked", G_CALLBACK(gtk_main_quit),NULL);
-	g_signal_connect(G_OBJECT(fCh), "selection-changed", G_CALLBACK(on_chooserFilename_file_activated),main_window);
+	g_signal_connect(G_OBJECT(fCh), "selection-changed", G_CALLBACK(on_chooserFilename_file_activated), main_window);
 	g_signal_connect(G_OBJECT(saveButton), "clicked", G_CALLBACK(setTags), main_window);
+	g_signal_connect(G_OBJECT(buttonTagsFromFilename), "clicked", G_CALLBACK(guess_tags_from_filename), main_window);
 
 	glade_xml_signal_autoconnect(main_window);
 

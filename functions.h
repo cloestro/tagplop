@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 #include <tag_c.h>
 #include <glade/glade.h>
+#include <string.h>
 
 
 #ifndef FALSE
@@ -43,5 +44,6 @@ void setTags(GtkButton *b, GladeXML *w);
 void resetInterface(GladeXML *w);
 void on_chooserFilename_file_activated(GtkFileChooserButton *b, GladeXML *w);
 void on_buttonSave_clicked(GtkButton * butt);
+void guess_tags_from_filename(GtkButton *button, GladeXML *w);
 #endif
 
