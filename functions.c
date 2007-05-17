@@ -138,6 +138,7 @@ void resetInterface(GladeXML *w)
 	gtk_label_set_label((GtkLabel *)glade_xml_get_widget(w, "labelSampleRate"), "");
 	gtk_label_set_label((GtkLabel *)glade_xml_get_widget(w, "labelChannels"), "");
 	gtk_label_set_label((GtkLabel *)glade_xml_get_widget(w, "labelLength"), "");
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryPUID"), "");
 
 
 }
@@ -263,10 +264,132 @@ void guess_tags_from_filename(GtkButton *button, GladeXML *w)
 	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryTitle"), title);
 	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryArtist"), artist);
 	
+	
 	g_free(filename2);
 	g_free(filename);
 	g_free(artist);
 	g_free(title);
 	
+	
+}
+
+
+void identify_track(GtkButton *button, GladeXML *w)
+{
+	gchar * filename = NULL ;
+	
+    tunepimp_t     pimp;
+    track_t        track;
+    int            done, fileId;
+    TPCallbackEnum type;
+    TPFileStatus   status;
+    char           puid[255];
+    char *clientId = CLIENTID ;
+    int            analyzed = 0;
+    gchar * puidUrl = NULL;
+
+	
+	filename = gtk_file_chooser_get_filename((GtkFileChooser *)glade_xml_get_widget(w, "chooserFilename"));
+	
+	if (!filename)
+		return;
+	pimp = tp_NewWithArgs("TagPlop", VERSIONNUMBER, TP_THREAD_ANALYZER | TP_THREAD_READ, NULL);
+	
+	tp_SetMusicDNSClientId(pimp, clientId);
+    tp_AddFile(pimp, (char *)filename, 0);
+    
+    
+    for(done = 0;!done;)
+    {
+        while(tp_GetNotification(pimp, &type, &fileId, &status) && !done)
+        {
+            if (type != tpFileChanged)
+                continue;
+
+            track = tp_GetTrack(pimp, 0);
+            tr_Lock(track);
+            switch(tr_GetStatus(track))
+            {
+                case ePUIDLookup:
+                {
+                	/*
+                    if (printID3)
+                        PrintMetadata(track);
+                    else
+                    if (isLookup)
+                        LookupMetadata(track, argv[index]);
+                    else
+                    {*/
+                        tr_GetPUID(track, puid, 255);
+                        g_warning("%s\n", puid);
+                        g_warning("Open the following adress in a browser");
+                        puidUrl = g_strdup_printf("http://test.musicbrainz.org/ws/1/track/?type=xml&puid=%s", puid);
+                        g_warning("%s", puidUrl);
+                        
+                        gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryPUID"), puidUrl);
+                        
+                    //}
+					//tp_GetRecognizedFileList(pimp, 50.0, &fileIds, &numIds);
+					//g_warning("found %d files", numIds);
+                    done = 1;
+                    break;
+                }
+                case eUnrecognized:
+                    if (!analyzed)
+                    {
+                        puid[0] = 0;
+                        tr_GetPUID(track, puid, 255);
+                        if (puid[0] == 0)
+                        {
+                            tr_SetStatus(track, ePending);
+                            tp_Wake(pimp, track);
+                            analyzed = 1;
+                        }
+                        break;
+                    }
+                    g_warning("No PUID available for this track.\n");
+                    done = 1;
+                    break;
+                    
+                case eRecognized:
+                    puid[0] = 0;
+                    tr_GetPUID(track, puid, 255);
+                    if (puid[0])
+                        g_warning("PUID id read from file: %s\n", puid);
+
+                    tp_IdentifyAgain(pimp, 0);
+                    break;
+                case ePending:
+                    break;
+                case eError:
+                {
+                    char err[255];
+                    tr_GetError(track, err, 255);
+                    g_warning("Error: %s\n", err);
+                    done = 1;
+                    break;
+                }
+                default:
+                    g_warning("Warning: Unsupported case: %d\n", tr_GetStatus(track));
+                    done = 1;
+                    break;
+            }
+            
+            tr_Unlock(track);
+            tp_ReleaseTrack(pimp, track);
+
+#ifdef WIN32
+            Sleep(50);
+#else
+            usleep(50000);
+#endif
+        }
+    }
+	
+	
+	
+    tp_Delete(pimp);
+	g_free(filename);
+	g_free(puidUrl);
 	
 }

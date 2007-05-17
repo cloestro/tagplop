@@ -43,7 +43,7 @@
 #define FALSE 0
 #endif
 
-#define VERSIONNUMBER "0.0.2"
+
 
 int main(int argc, char **argv)
 {
@@ -53,6 +53,7 @@ int main(int argc, char **argv)
 	GtkButton *saveButton ;
 	GladeXML *main_window;
 	GtkButton *buttonTagsFromFilename ;
+	GtkButton *buttonMusicBrainz;
 	
 	gchar * appTitle = g_strdup_printf("TagPlop %s", VERSIONNUMBER);
 
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
 	fCh = (GtkFileChooserButton *)glade_xml_get_widget(main_window, "chooserFilename");
 	saveButton = (GtkButton *)glade_xml_get_widget(main_window, "buttonSave");
 	buttonTagsFromFilename = (GtkButton *)glade_xml_get_widget(main_window, "buttonTagsFromFilename");
-
+	buttonMusicBrainz =  (GtkButton *)glade_xml_get_widget(main_window, "buttonMusicBrainz");
 
 
 	g_signal_connect(G_OBJECT(widget),"destroy",G_CALLBACK(gtk_main_quit),NULL);
@@ -88,6 +89,7 @@ int main(int argc, char **argv)
 	g_signal_connect(G_OBJECT(fCh), "selection-changed", G_CALLBACK(on_chooserFilename_file_activated), main_window);
 	g_signal_connect(G_OBJECT(saveButton), "clicked", G_CALLBACK(setTags), main_window);
 	g_signal_connect(G_OBJECT(buttonTagsFromFilename), "clicked", G_CALLBACK(guess_tags_from_filename), main_window);
+	g_signal_connect(G_OBJECT(buttonMusicBrainz), "clicked", G_CALLBACK(identify_track), main_window);
 
 	glade_xml_signal_autoconnect(main_window);
 

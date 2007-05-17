@@ -2,9 +2,9 @@
 
 CC=gcc
 INSTDIR=/usr/share/tagplop
-
+# -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
 CFLAGS=-g -W -Wall `pkg-config --cflags gtk+-2.0 libglade-2.0 taglib` -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
-LIBS=`pkg-config --libs gtk+-2.0 libglade-2.0` -ltag_c
+LIBS=`pkg-config --libs gtk+-2.0 libglade-2.0` -ltag_c -ltunepimp
 
 TARGET=tagplop
 OBJECTS=main.o functions.o

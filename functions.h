@@ -29,13 +29,16 @@
 #include <tag_c.h>
 #include <glade/glade.h>
 #include <string.h>
+#include <tunepimp-0.5/tp_c.h>
+#include <unistd.h>
 
 
 #ifndef FALSE
 #define FALSE 0
 #endif
 
-
+#define VERSIONNUMBER "0.0.2"
+#define CLIENTID "a7f6063296c0f1c9b75c7f511861b89b"
 
 
 void displayTags(GladeXML *w, TagLib_Tag *tag,
@@ -45,5 +48,6 @@ void resetInterface(GladeXML *w);
 void on_chooserFilename_file_activated(GtkFileChooserButton *b, GladeXML *w);
 void on_buttonSave_clicked(GtkButton * butt);
 void guess_tags_from_filename(GtkButton *button, GladeXML *w);
+void identify_track(GtkButton *button, GladeXML *w);
 #endif
 
