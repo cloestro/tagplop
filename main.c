@@ -34,7 +34,7 @@
 #include "version.h"
 
 #ifndef FILENAME
-#define FILENAME "tagplop.glade"
+#define FILENAME "tagplop2.glade"
 #endif
 
 #define ROOTNODE "/"
@@ -43,6 +43,7 @@
 #ifndef FALSE
 #define FALSE 0
 #endif
+
 
 
 
@@ -55,6 +56,9 @@ int main(int argc, char **argv)
 	GladeXML *main_window;
 	GtkButton *buttonTagsFromFilename ;
 	GtkButton *buttonMusicBrainz;
+	GtkButton *button_mb_prev ;
+	GtkButton *button_mb_next ;
+	GtkButton *button_mb_ok;
 	
 	gchar * appTitle = g_strdup_printf("TagPlop %s", VERSIONNUMBER);
 
@@ -83,7 +87,9 @@ int main(int argc, char **argv)
 	saveButton = (GtkButton *)glade_xml_get_widget(main_window, "buttonSave");
 	buttonTagsFromFilename = (GtkButton *)glade_xml_get_widget(main_window, "buttonTagsFromFilename");
 	buttonMusicBrainz =  (GtkButton *)glade_xml_get_widget(main_window, "buttonMusicBrainz");
-
+	button_mb_prev = (GtkButton *)glade_xml_get_widget(main_window, "button_mb_prev");
+	button_mb_next = (GtkButton *)glade_xml_get_widget(main_window, "button_mb_next");
+	button_mb_ok = (GtkButton *)glade_xml_get_widget(main_window, "button_mb_ok");
 
 	g_signal_connect(G_OBJECT(widget),"destroy",G_CALLBACK(gtk_main_quit),NULL);
 	g_signal_connect(G_OBJECT(cancelButton), "clicked", G_CALLBACK(gtk_main_quit),NULL);
@@ -91,6 +97,9 @@ int main(int argc, char **argv)
 	g_signal_connect(G_OBJECT(saveButton), "clicked", G_CALLBACK(setTags), main_window);
 	g_signal_connect(G_OBJECT(buttonTagsFromFilename), "clicked", G_CALLBACK(guess_tags_from_filename), main_window);
 	g_signal_connect(G_OBJECT(buttonMusicBrainz), "clicked", G_CALLBACK(identify_track), main_window);
+	g_signal_connect(G_OBJECT(button_mb_prev), "clicked", G_CALLBACK(display_previous), main_window);
+	g_signal_connect(G_OBJECT(button_mb_next), "clicked", G_CALLBACK(display_next), main_window);
+	g_signal_connect(G_OBJECT(button_mb_ok), "clicked", G_CALLBACK(choose_mb_track), main_window);
 
 	glade_xml_signal_autoconnect(main_window);
 

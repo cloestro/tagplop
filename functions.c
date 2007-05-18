@@ -141,6 +141,15 @@ void resetInterface(GladeXML *w)
 	gtk_label_set_label((GtkLabel *)glade_xml_get_widget(w, "labelChannels"), "");
 	gtk_label_set_label((GtkLabel *)glade_xml_get_widget(w, "labelLength"), "");
 	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryPUID"), "");
+	
+	
+	if ( list_infos_g )
+	{
+		free(list_infos_g);
+		list_infos_g = NULL ;
+	}
+	
+	list_size_g = 0 ;
 
 
 }
@@ -290,10 +299,10 @@ void identify_track(GtkButton *button, GladeXML *w)
     int            analyzed = 0;
     gchar * puidUrl = NULL;
     struct MemoryStruct chunk;
-    TRACKINFOS **list_infos = NULL ;
+    
     int list_size;
     int i ;
-    printf("TRACKINFOS size: %d\n", sizeof(TRACKINFOS));
+
 
 	
 	filename = gtk_file_chooser_get_filename((GtkFileChooser *)glade_xml_get_widget(w, "chooserFilename"));
@@ -407,9 +416,9 @@ void identify_track(GtkButton *button, GladeXML *w)
 	}
 	
 	//my_parse_xml(chunk.memory, chunk.size);
-	list_size = my_parse_xml(chunk.memory, chunk.size, list_infos);
-	//list_infos = my_parse_xml(chunk.memory, chunk.size, &list_size);
-	get_chosen_track(*list_infos, list_size, w);
+	//list_size = my_parse_xml(chunk.memory, chunk.size, list_infos);
+	list_infos_g = my_parse_xml(chunk.memory, chunk.size, &list_size_g);
+	get_chosen_track(list_infos_g, list_size_g, w);
 	
 	
 	
@@ -422,12 +431,140 @@ void identify_track(GtkButton *button, GladeXML *w)
 		free((*list_infos)[i].album);
 	}
 	*/
-	//free(list_infos);
 	
+	
+
+	
+	
+	//gtk_widget_show_all(glade_xml_get_widget (w, "dialog_mb"));
     free(chunk.memory);	
 	g_free(puidUrl);
 	
 }
 
 
+
+
+void display_previous(GtkButton *button, GladeXML *w)
+{
+	
+	int n = 0 ;
+	gchar* nstr = NULL;
+	gchar * nstr_cur = NULL;
+	
+	int duration = 0;
+  	int tracknumber = 0;
+  	int seconds = 0;
+  	int minutes = 0;
+  	
+  	gchar * strDuration = NULL ;
+  	gchar * strTrack = NULL ;
+	
+	//TRACKINFOS * the_list = get_static_list_infos();
+	
+	nstr = gtk_entry_get_text((GtkEntry *)glade_xml_get_widget(w, "entryResultNumber"));
+	
+	if ( strlen(nstr) < 1 )
+	{
+		if ( nstr )
+			g_free(nstr) ;
+		return ;
+	}
+	
+	n = atoi(nstr);
+	
+	n-- ;
+	
+	if ( n == 0 )
+	{
+		n = list_size_g ;	
+	}
+	
+	if ( !list_infos_g )
+		abort();
+	
+	nstr_cur = g_strdup_printf("%i", n);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryResultNumber"), nstr_cur);
+	
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_title"), list_infos_g[n-1].title);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_artist"), list_infos_g[n-1].artist);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_sort"), list_infos_g[n-1].sort);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_album"), list_infos_g[n-1].album);
+	
+	duration = list_infos_g[n-1].duration;
+	seconds = (duration % 60000) / 1000;
+	minutes = ( duration - seconds*1000) / 60000;
+	strDuration = g_strdup_printf("%i:%02i", minutes, seconds);
+	strTrack = g_strdup_printf("%i", list_infos_g[n-1].tracknumber);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_duration"), strDuration);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_track"), strTrack);
+	
+	g_free(strDuration);
+	g_free(strTrack);
+	g_free(nstr_cur);
+	//g_free(nstr);
+	
+		
+}
+void display_next(GtkButton *button, GladeXML *w)
+{
+	int n = 0 ;
+	gchar* nstr = NULL;
+	gchar * nstr_cur = NULL;
+
+	int duration = 0;
+  	int tracknumber = 0;
+  	int seconds = 0;
+  	int minutes = 0;
+  	
+  	gchar * strDuration = NULL ;
+  	gchar * strTrack = NULL ;
+	
+	//TRACKINFOS * the_list = get_static_list_infos();
+	
+	nstr = gtk_entry_get_text((GtkEntry *)glade_xml_get_widget(w, "entryResultNumber"));
+	
+	if ( strlen(nstr) < 1 )
+	{
+		if ( nstr )
+			g_free(nstr) ;
+		return ;
+	}
+	
+	n = atoi(nstr);
+	
+	n++ ;
+	
+	if ( n == list_size_g + 1 )
+	{
+		n = 1 ;	
+	}
+	
+	if ( !list_infos_g )
+		abort();
+	
+	nstr_cur = g_strdup_printf("%i", n);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entryResultNumber"), nstr_cur);
+	
+	
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_title"), list_infos_g[n-1].title);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_artist"), list_infos_g[n-1].artist);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_sort"), list_infos_g[n-1].sort);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_album"), list_infos_g[n-1].album);
+		
+	duration = list_infos_g[n-1].duration;
+	seconds = (duration % 60000) / 1000;
+	minutes = ( duration - seconds*1000) / 60000;
+	strDuration = g_strdup_printf("%i:%02i", minutes, seconds);
+	strTrack = g_strdup_printf("%i", list_infos_g[n-1].tracknumber);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_duration"), strDuration);
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(w, "entry_mb_track"), strTrack);
+	
+	g_free(strDuration);
+	g_free(strTrack);
+	g_free(nstr_cur);
+	//g_free(nstr);
+	
+	
+}
 
