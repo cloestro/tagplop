@@ -68,7 +68,8 @@ print_element_names(xmlNode * a_node)
     }
 }
 
-int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
+//int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
+TRACKINFOS * get_list_possible_tracks(xmlNode * a_node, int * list_size)
 {
 	xmlNode *list_node = NULL;
 	xmlNode *track_node = NULL ;
@@ -77,7 +78,7 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 	xmlNode *e3 = NULL ;
 	
 
-	//TRACKINFOS * list_infos ;
+	TRACKINFOS * list_infos = NULL;
 	int cnt = 0 ;
 	
 	list_node = a_node->children; //list_node corresponds to <track-list>
@@ -88,18 +89,18 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 	for ( track_node = list_node -> children; track_node; track_node = track_node->next)
 	{
 		if ( cnt == 0 )
-			list_infos = (TRACKINFOS **)malloc(sizeof(TRACKINFOS));
+			list_infos = (TRACKINFOS *)malloc(sizeof(TRACKINFOS));
 			//list_infos = (TRACKINFOS **)new_track_struct();
 		else
 			//list_infos = (TRACKINFOS **)realloc(list_infos, (cnt + 1) * sizeof(TRACKINFOS));
-			list_infos = (TRACKINFOS **)realloc(list_infos, (cnt + 1) * sizeof(TRACKINFOS));
+			list_infos = (TRACKINFOS *)realloc(list_infos, (cnt + 1) * sizeof(TRACKINFOS));
 		
-		(*list_infos)[cnt].title[0] = '\0';
-		(*list_infos)[cnt].album[0] = '\0';
-		(*list_infos)[cnt].artist[0] = '\0';
-		(*list_infos)[cnt].sort[0] = '\0';
-		(*list_infos)[cnt].tracknumber = 0;
-		(*list_infos)[cnt].duration = 0;
+		list_infos[cnt].title[0] = '\0';
+		list_infos[cnt].album[0] = '\0';
+		list_infos[cnt].artist[0] = '\0';
+		list_infos[cnt].sort[0] = '\0';
+		list_infos[cnt].tracknumber = 0;
+		list_infos[cnt].duration = 0;
 		
 		
 		if ( !(track_node->children) )
@@ -115,12 +116,12 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 			{
 				printf("Title: %s\n", elem_node->children->content);
 				/*(*list_infos)[cnt].title = (char *)malloc(strlen(elem_node->children->content));*/
-				strcpy((*list_infos)[cnt].title, elem_node->children->content) ;
+				strcpy(list_infos[cnt].title, elem_node->children->content) ;
 			}
 			else if( !strcmp(elem_node->name, "duration") )
 			{
 				printf("Duration: %s\n", elem_node->children->content);
-				(*list_infos)[cnt].duration = atoi(elem_node->children->content) ;
+				list_infos[cnt].duration = atoi(elem_node->children->content) ;
 			}
 			
 			else if ( !strcmp(elem_node->name, "artist"))
@@ -136,13 +137,13 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 					{
 						printf("Name: %s\n", e2->children->content);		
 						//(*list_infos)[cnt].artist = (char *)malloc(strlen(e2->children->content));
-						strcpy((*list_infos)[cnt].artist, e2->children->content) ;				
+						strcpy(list_infos[cnt].artist, e2->children->content) ;				
 					}
 					else if ( !strcmp(e2->name, "sort-name"))
 					{
 						printf("Sorted name: %s\n", e2->children->content);
 						//(*list_infos)[cnt].sort = (char *)malloc(strlen(e2->children->content));
-						strcpy((*list_infos)[cnt].sort, e2->children->content) ;	
+						strcpy(list_infos[cnt].sort, e2->children->content) ;	
 					}					
 					
 				}
@@ -152,23 +153,24 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 			{
 				for ( e2 = elem_node->children; e2; e2 = e2->next) // e2 <=> release
 				{
-					
+					printf("Mais qu'est-ce: %s\n", e2->name);
 					if ( ! e2->children )
 						continue ;
 					
-					for ( e3 = elem_node->children; e3; e3 = e3->next)
+					for ( e3 = e2->children; e3; e3 = e3->next)
 					{
+						
 					
 						if ( ! strcmp(e3->name, "title") )
 						{
 							printf("Album: %s\n", e3->children->content );
 							//(*list_infos)[cnt].album = (char *)malloc(strlen(e3->children->content));
-							strcpy((*list_infos)[cnt].album, e3->children->content) ;
+							strcpy(list_infos[cnt].album, e3->children->content) ;
 						}
 						else //if ( ! strcmp(e3->name, "track-list" ) )
 						{
 							printf("Track number: %s\n", e3->properties->name);
-							(*list_infos)[cnt].tracknumber = 0;
+							list_infos[cnt].tracknumber = 0;
 						}
 					
 					}
@@ -181,7 +183,9 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
 		cnt ++ ;			
 	}
 	
-	return cnt ;
+	
+	*list_size = cnt ;
+	return list_infos ;
 	 
 }
 
@@ -190,13 +194,13 @@ int get_list_possible_tracks(xmlNode * a_node, TRACKINFOS ** list_infos)
  * walk down the DOM, and print the name of the 
  * xml elements nodes.
  */
-int
-my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
-//TRACKINFOS * my_parse_xml(const char * str, int l, int * list_size)
+//int my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
+TRACKINFOS * my_parse_xml(const char * str, int l, int * list_size)
 {
     xmlDocPtr *doc = NULL;
     xmlNode *root_element = NULL;
     int cnt ;
+    TRACKINFOS * list_infos = NULL ;
 
 
 
@@ -212,7 +216,7 @@ my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
     doc = xmlReadMemory(str, l, "noname.xml", NULL, 0);
     if (doc == NULL) {
         fprintf(stderr, "Failed to parse document\n");
-	return -1;
+	return NULL;
     }
 
 
@@ -222,7 +226,8 @@ my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
 
     //print_element_names(root_element);
     //get_list_possible_tracks(root_element);
-    cnt = get_list_possible_tracks(root_element, list_infos);
+    //cnt = get_list_possible_tracks(root_element, list_infos);
+    list_infos = get_list_possible_tracks(root_element, list_size);
 
     /*free the document */
     xmlFreeDoc(doc);
@@ -233,6 +238,15 @@ my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
      */
     xmlCleanupParser();
 
-    return cnt;
+    return list_infos;
+}
+
+TRACKINFOS * get_static_list_infos()
+{
+	
+	return list_infos_g ;
+	
+	
+	
 }
 
