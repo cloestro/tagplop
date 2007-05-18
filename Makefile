@@ -3,11 +3,11 @@
 CC=gcc
 INSTDIR=/usr/share/tagplop
 # -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
-CFLAGS=-g -W -Wall `pkg-config --cflags gtk+-2.0 libglade-2.0 taglib` -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
-LIBS=`pkg-config --libs gtk+-2.0 libglade-2.0` -ltag_c -ltunepimp
+CFLAGS=-g `pkg-config --cflags gtk+-2.0 libglade-2.0 taglib` `xml2-config --cflags`
+LIBS=`pkg-config --libs gtk+-2.0 libglade-2.0` `xml2-config --libs` -ltag_c -ltunepimp -lcurl
 
 TARGET=tagplop
-OBJECTS=main.o functions.o
+OBJECTS=main.o functions.o network.o xml.o gtkchosentrack.o
 
 
 all: $(TARGET)
@@ -16,11 +16,23 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS) 
 	$(CC) -o $@ $^ $(LIBS)
 
-MAIN: main.c
+MAIN: main.c version.h functions.h xml.h
 	$(CC) -c $^ $(CFLAGS)
 
-FUNCTIONS: functions.c functions.h
+FUNCTIONS: functions.c functions.h network.h version.h xml.h
 	$(CC) -c functions.c $(CFLAGS)
+
+networks: network.c network.h version.h
+	$(CC) -c network.c $(CFLAGS)
+
+gtkchosentrack: gtkchosentrack.c gtkchosentrack.h xml.c xml.h version.h
+	$(CC) -c gtkchosentrack.c $(CFLAGS)
+
+
+xml: xml.c xml.h version.h
+	$(CC) -c xml.c $(CFLAGS)
+
+
 clean:
 	rm -f *.o *~ $(TARGET) *.bak
 

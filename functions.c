@@ -22,6 +22,8 @@
 /* $Id$ */
 
 #include "functions.h"
+#include "network.h"
+#include "xml.h"
 
 void displayTags(GladeXML *w, TagLib_Tag *tag,
 		const TagLib_AudioProperties *properties)
@@ -287,6 +289,11 @@ void identify_track(GtkButton *button, GladeXML *w)
     char *clientId = CLIENTID ;
     int            analyzed = 0;
     gchar * puidUrl = NULL;
+    struct MemoryStruct chunk;
+    TRACKINFOS **list_infos = NULL ;
+    int list_size;
+    int i ;
+    printf("TRACKINFOS size: %d\n", sizeof(TRACKINFOS));
 
 	
 	filename = gtk_file_chooser_get_filename((GtkFileChooser *)glade_xml_get_widget(w, "chooserFilename"));
@@ -390,6 +397,37 @@ void identify_track(GtkButton *button, GladeXML *w)
 	
     tp_Delete(pimp);
 	g_free(filename);
+	
+	
+	chunk = get_file_in_memory(puidUrl);
+	if(!chunk.memory)
+	{
+		g_free(puidUrl);
+		return;
+	}
+	
+	//my_parse_xml(chunk.memory, chunk.size);
+	list_size = my_parse_xml(chunk.memory, chunk.size, list_infos);
+	//list_infos = my_parse_xml(chunk.memory, chunk.size, &list_size);
+	get_chosen_track(*list_infos, list_size, w);
+	
+	
+	
+	/*
+	for ( i=0; i< list_size; i++)
+	{
+		free((*list_infos)[i].artist);
+		free((*list_infos)[i].title);
+		free((*list_infos)[i].sort);
+		free((*list_infos)[i].album);
+	}
+	*/
+	//free(list_infos);
+	
+    free(chunk.memory);	
 	g_free(puidUrl);
 	
 }
+
+
+

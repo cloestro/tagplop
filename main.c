@@ -31,6 +31,7 @@
 #include <tag_c.h>
 
 #include "functions.h"
+#include "version.h"
 
 #ifndef FILENAME
 #define FILENAME "tagplop.glade"
