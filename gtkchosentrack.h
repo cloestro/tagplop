@@ -7,6 +7,11 @@
 #include "xml.h"
 #include "version.h"
 
+typedef struct {
+	TRACKINFOS * infos;
+	 GladeXML *w ;
+} MBTRACKANDGLADEXML;
+
 /* This enum is useful to label the columns */
 enum
 {
@@ -20,4 +25,5 @@ enum
 };
 
 int get_chosen_track(TRACKINFOS * list_infos, int track_infos_size, GladeXML *w);
+void choose_mb_track(GtkButton *b, GladeXML *w);
 #endif /*GTKCHOSENTRACK_H_*/

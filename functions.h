@@ -50,6 +50,8 @@ void on_chooserFilename_file_activated(GtkFileChooserButton *b, GladeXML *w);
 void on_buttonSave_clicked(GtkButton * butt);
 void guess_tags_from_filename(GtkButton *button, GladeXML *w);
 void identify_track(GtkButton *button, GladeXML *w);
+void display_previous(GtkButton *button, GladeXML *w);
+void display_next(GtkButton *button, GladeXML *w);
 
 #endif
 
