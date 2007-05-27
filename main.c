@@ -34,7 +34,7 @@
 #include "version.h"
 
 #ifndef FILENAME
-#define FILENAME "tagplop2.glade"
+#define FILENAME "tagplop.glade"
 #endif
 
 #define ROOTNODE "/"

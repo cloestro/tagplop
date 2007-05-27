@@ -3,7 +3,7 @@
 CC=gcc
 INSTDIR=/usr/share/tagplop
 # -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
-CFLAGS=-g `pkg-config --cflags gtk+-2.0 libglade-2.0 taglib` `xml2-config --cflags`
+CFLAGS=-g `pkg-config --cflags gtk+-2.0 libglade-2.0 taglib` `xml2-config --cflags` -DFILENAME=\"$(INSTDIR)/tagplop.glade\"
 LIBS=`pkg-config --libs gtk+-2.0 libglade-2.0` `xml2-config --libs` -ltag_c -ltunepimp -lcurl
 
 TARGET=tagplop
