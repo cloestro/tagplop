@@ -1,0 +1,22 @@
+$Id$
+
+Dependancies:
+- GTK+ 2.0
+- libglade
+- taglib
+- libxml
+- libtunepimp
+- libcurl
+
+To install run:
+make
+
+And then as root:
+make install
+
+It will install itself under /usr/share/tagplop
+(and the executable under /usr/bin )
+
+To uninstall, run as root:
+make uninstall
+

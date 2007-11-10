@@ -1,18 +1,28 @@
+/*
+ *  TagPlop -- An easy music file tagger
+ *
+ *  Copyright (C) 2007 Anthony Domi
+ *  This file is part of TagPlop.
+ *
+ *  TagPlop is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  TagPlop is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with TagPlop; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+/* $Id$ */
+
 #include "xml.h"
 
-
-/*
- *To compile this file using gcc you can type
- *gcc `xml2-config --cflags --libs` -o xmlexample libxml2-example.c
- */
-
-/**
- * print_element_names:
- * @a_node: the initial xml node to consider.
- *
- * Prints the names of the all the xml elements
- * that are siblings or children of a given xml node.
- */
  
 TRACKINFOS * new_track_struct()
 {
@@ -189,11 +199,6 @@ TRACKINFOS * get_list_possible_tracks(xmlNode * a_node, int * list_size)
 	 
 }
 
-/**
- * Simple example to parse a file called "file.xml", 
- * walk down the DOM, and print the name of the 
- * xml elements nodes.
- */
 //int my_parse_xml(const char * str, int l, TRACKINFOS ** list_infos)
 TRACKINFOS * my_parse_xml(const char * str, int l, int * list_size)
 {

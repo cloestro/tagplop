@@ -466,8 +466,8 @@ void display_previous(GtkButton *button, GladeXML *w)
 	
 	if ( strlen(nstr) < 1 )
 	{
-		if ( nstr )
-			g_free(nstr) ;
+		//if ( nstr )
+			//g_free(nstr) ;
 		return ;
 	}
 	
@@ -526,8 +526,8 @@ void display_next(GtkButton *button, GladeXML *w)
 	
 	if ( strlen(nstr) < 1 )
 	{
-		if ( nstr )
-			g_free(nstr) ;
+		//if ( nstr )
+		//	g_free(nstr) ;
 		return ;
 	}
 	
